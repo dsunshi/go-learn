@@ -1,3 +1,9 @@
+*~
+out/
+download/
+images/
+gen/
+
 # Prerequisites
 *.d
 
