@@ -10,7 +10,7 @@
 
 
 int main(void) {
-        int gap = 50;
+        int gap = CARD_WIDTH / 2;
         int image_width  = 5 * gap + 4 * CARD_WIDTH;
         int image_height = CARD_HEIGHT * 2;
 
@@ -108,13 +108,13 @@ int main(void) {
                 month = ((int) sliderValue);
 
                 for (int i = 0; i < 4; i++) {
-                        int x = 3*gap + i*image_width/4 - CARD_WIDTH/2;
+                        int x = i*image_width/4 + gap/2;
                         int y = image_height/2 - CARD_HEIGHT/2;
 
                         DrawTexture(MONTHS[month][i], x, y, WHITE);
                 }
 
-                GuiSliderBar((Rectangle){ gap, gap, image_width - gap * 2, CARD_HEIGHT/4 }, "Min: 0", "Max: 11", &sliderValue, 0.0f, 11.0f);
+                GuiSliderBar((Rectangle){ gap, (CARD_HEIGHT/2 - CARD_HEIGHT/4)/2, image_width - gap * 2, CARD_HEIGHT/4 }, "1", "12", &sliderValue, 0.0f, 11.0f);
                 EndDrawing();
         }
 
