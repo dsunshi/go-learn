@@ -1,5 +1,5 @@
 
-CARD_WIDTH   := 250
+CARD_WIDTH   := 100
 ASPECT_RATIO := 0.6128
 CARD_HEIGHT  := $(shell echo "scale=0; $(CARD_WIDTH) / $(ASPECT_RATIO)" | bc)
 
