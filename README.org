@@ -4,7 +4,10 @@
 - [[file:/usr/local/include/raylib.h][raylib.h]]
 - [[file:/usr/local/include/raymath.h][raymath.h]]
 * Dependencies
+- Alternate Images: 
 - bc
 - inkscape
 - make
 - gcc
+* Attributions
+Hwatu card images are licensed under the [[https://en.wikipedia.org/wiki/en:Creative_Commons][Creative Commons]] [[https://creativecommons.org/licenses/by-sa/4.0/deed.en][Attribution-Share Alike 4.0 International]] license. Made by Marcus Richert on the basis of Louie Mantia, Jr.'s Hanafuda graphics, available [[https://commons.wikimedia.org/wiki/Category:SVG_Hanafuda_with_green_plants][here]] on Wikimedia Commons. 
