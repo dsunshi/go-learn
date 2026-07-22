@@ -1,0 +1,10 @@
+
+* Go-learn
+** References
+- [[file:/usr/local/include/raylib.h][raylib.h]]
+- [[file:/usr/local/include/raymath.h][raymath.h]]
+* Dependencies
+- bc
+- inkscape
+- make
+- gcc
