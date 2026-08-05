@@ -1,4 +1,29 @@
 
+* Hwatu
+ Tane    -> Animal
+ Hikari  -> Bright
+ Tanzaku -> Ribbon
+ Kasu    -> Junk
+ Exceptions:
+ - May Tane        -> Double Junk
+ - September Tane  -> Double Junk
+ - November Kasu_2 -> Double Junk
+ - December Kasu   -> Double Junk
+| Suit      | Bright | Animal | Ribbon | Junk | Junk | Double Junk |
+|-----------+--------+--------+--------+------+------+-------------|
+| January   |      1 |        |      1 |    1 |    1 |             |
+| February  |        |      1 |      1 |    1 |    1 |             |
+| March     |      1 |        |      1 |    1 |    1 |             |
+| April     |        |      1 |      1 |    1 |    1 |             |
+| May       |        |        |      1 |    1 |    1 |           1 |
+| June      |        |      1 |      1 |    1 |    1 |             |
+| July      |        |      1 |      1 |    1 |    1 |             |
+| August    |      1 |      1 |        |    1 |    1 |             |
+| September |        |        |      1 |    1 |    1 |           1 |
+| October   |        |      1 |      1 |    1 |    1 |             |
+| November  |      1 |        |        |    1 |    1 |           1 |
+| December  |      1 |      1 |      1 |      |      |           1 |
+ 
 * Go-learn
 ** References
 - [[file:/usr/local/include/raylib.h][raylib.h]]
