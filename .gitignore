@@ -3,6 +3,9 @@ out/
 download/
 images/
 gen/
+*.pdf
+\#*\#
+.\#*
 
 # Prerequisites
 *.d
