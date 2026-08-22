@@ -11,6 +11,8 @@
 
 #define SUIT_ANY    (0x0F)
 
+typedef int (* match_fn)(unsigned int, unsigned int);
+
 int and_match(unsigned int mask, unsigned int card) {
         unsigned int mask_flags = mask >> 10;
         unsigned int card_flags = card >> 10;
@@ -41,7 +43,7 @@ void free_images(Texture2D *images, int length) {
         free(images);
 }
 
-Texture2D* find_images(unsigned int mask, int *length) {
+Texture2D* find_images(unsigned int mask, match_fn match, int *length) {
         int size = 0;
 
         if (mask == 0) {
@@ -51,7 +53,7 @@ Texture2D* find_images(unsigned int mask, int *length) {
         }
      
         for (int i = 0; i < NUM_CARDS; i++) {
-                if (and_match(mask, CARDS[i])) {
+                if (match(mask, CARDS[i])) {
                         size++;
                 }
         }
@@ -67,7 +69,7 @@ Texture2D* find_images(unsigned int mask, int *length) {
         *length = 0;
         for (int i = 0; i < NUM_CARDS; i++) {
                 unsigned int card = CARDS[i];
-                if (and_match(mask, card)) {
+                if (match(mask, card)) {
                         /* printf("Loading 0x%04X\n", card); */
                         textures[*length] = LoadTextureFromImage(IMAGE_DECK[GET_INDEX(card)]);
                         *length += 1;
@@ -102,7 +104,7 @@ int main(void) {
         /* SET_RIBBON(mask); */
         SET_SUIT(mask, SUIT_ANY);
 
-        Texture2D *textures = find_images(mask, &length);
+        Texture2D *textures = find_images(mask, and_match, &length);
         float scale         = ((float) MAX_CARDS / (float) length) * 0.5f;
         
         printf("Found %d matches!\n", length);
