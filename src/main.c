@@ -49,15 +49,15 @@ void draw_card_from_texture(Texture2D image, float center_x, float center_y, flo
         float roundness    = CARD_HEIGHT / 1000.0f;
         int segments       = 0;
 
-        float shadow_offset = roundness * 40.0f;
+        float shadow_offset = roundness * 30.0f;
 
         Rectangle r = { x + shadow_offset,
                         y + shadow_offset,
-                        (float) CARD_WIDTH,
-                        (float) CARD_HEIGHT };
+                        (float) (CARD_WIDTH  * 1.0f),
+                        (float) (CARD_HEIGHT * 1.0f) };
 
+        DrawRectangleRounded(r, roundness, segments, Fade(DARKGRAY, 0.5f));
         DrawTextureEx(image, (Vector2) {x, y}, 0.0f, scale, WHITE);
-        DrawRectangleRounded(r, roundness, segments, Fade(DARKGRAY, 0.2f));
 }
 
 Texture2D* find_images(unsigned int mask, match_fn match, int *length) {
@@ -115,16 +115,16 @@ int main(void) {
         int length = 0x00;
         /* SET_ANIMAL(mask); */
         /* SET_BRIGHT(mask); */
-        SET_DOUBLE_JUNK(mask);
+        /* SET_DOUBLE_JUNK(mask); */
         /* SET_JOKER(mask); */
-        /* SET_JUNK(mask); */
+        SET_JUNK(mask);
         /* SET_RIBBON(mask); */
-        SET_SUIT(mask, SUIT_ANY);
+        SET_SUIT(mask, 3);
 
         Texture2D *textures = find_images(mask, and_match, &length);
-        float scale         = ((float) MAX_CARDS / (float) length) * 0.5f;
+        float scale         = fmin(0.5f, ((float) MAX_CARDS / (float) length) * 0.5f);
         
-        /* printf("Found %d matches!\n", length); */
+        printf("Found %d matches!\n", length);
 
         while (!WindowShouldClose()) {
                 BeginDrawing();
