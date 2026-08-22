@@ -33,7 +33,15 @@ int or_match(unsigned int mask, unsigned int card) {
         }
 }
 
-int* find_images(unsigned int mask, int *length) {
+void free_images(Texture2D *images, int length) {
+        for (int i = 0; i < length; i++) {
+                UnloadTexture(images[i]);
+        }
+
+        free(images);
+}
+
+Texture2D* find_images(unsigned int mask, int *length) {
         int size = 0;
 
         if (mask == 0) {
@@ -48,9 +56,9 @@ int* find_images(unsigned int mask, int *length) {
                 }
         }
 
-        int *arr = (int*) malloc((unsigned long) size * sizeof(int));
+        Texture2D *textures = (Texture2D *) malloc((unsigned long) size * sizeof(Texture2D));
 
-        if (arr == NULL) {
+        if (textures == NULL) {
                 printf("[ERROR] Failed to allocate!");
                 *length = 0;
                 return NULL;
@@ -58,8 +66,10 @@ int* find_images(unsigned int mask, int *length) {
         
         *length = 0;
         for (int i = 0; i < NUM_CARDS; i++) {
-                if (and_match(mask, CARDS[i])) {
-                        arr[*length] = GET_INDEX(CARDS[i]);
+                unsigned int card = CARDS[i];
+                if (and_match(mask, card)) {
+                        /* printf("Loading 0x%04X\n", card); */
+                        textures[*length] = LoadTextureFromImage(IMAGE_DECK[GET_INDEX(card)]);
                         *length += 1;
                 }
         }
@@ -71,7 +81,7 @@ int* find_images(unsigned int mask, int *length) {
                 return NULL;
         }
 
-        return arr;
+        return textures;
 }
 
 int main(void) {
@@ -86,20 +96,14 @@ int main(void) {
         int length = 0x00;
         /* SET_ANIMAL(mask); */
         /* SET_BRIGHT(mask); */
-        /* SET_DOUBLE_JUNK(mask); */
+        SET_DOUBLE_JUNK(mask);
         /* SET_JOKER(mask); */
         /* SET_JUNK(mask); */
-        SET_RIBBON(mask);
+        /* SET_RIBBON(mask); */
         SET_SUIT(mask, SUIT_ANY);
 
-        int *matches = find_images(mask, &length);
-
+        Texture2D *textures = find_images(mask, &length);
         float scale         = ((float) MAX_CARDS / (float) length) * 0.5f;
-        Texture2D *textures = (Texture2D *) malloc((unsigned long) length * sizeof(Texture2D));
-
-        for (int i = 0; i < length; i++) {
-                textures[i] = LoadTextureFromImage(IMAGE_DECK[matches[i]]);
-        }
         
         printf("Found %d matches!\n", length);
 
@@ -111,17 +115,14 @@ int main(void) {
                 for (int i = 0; i < length; i++) {
                         float x = ((float) i) * ((float) image_width / (float) length) + ((float) gap) * scale;
                         float y = ((float) image_height / 2.0f) - CARD_HEIGHT * scale;
+
                         DrawTextureEx(textures[i], (Vector2) {x, y}, 0.0f, scale, WHITE); 
                 }
 
                 EndDrawing();
         }
 
-        for (int i = 0; i < length; i++) {
-                UnloadTexture(textures[i]);
-        }
-
-        free(matches);
+        free_images(textures, length);
 
         CloseWindow();
 
