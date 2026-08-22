@@ -56,7 +56,7 @@ void draw_card_from_texture(Texture2D image, float center_x, float center_y, flo
                         (float) (CARD_WIDTH  * 1.0f),
                         (float) (CARD_HEIGHT * 1.0f) };
 
-        DrawRectangleRounded(r, roundness, segments, Fade(DARKGRAY, 0.5f));
+        DrawRectangleRounded(r, roundness, segments, Fade((Color) { 24, 24, 37, 255}, 0.5f));
         DrawTextureEx(image, (Vector2) {x, y}, 0.0f, scale, WHITE);
 }
 
@@ -117,7 +117,7 @@ int main(void) {
         /* SET_BRIGHT(mask); */
         /* SET_DOUBLE_JUNK(mask); */
         /* SET_JOKER(mask); */
-        SET_JUNK(mask);
+        /* SET_JUNK(mask); */
         /* SET_RIBBON(mask); */
         SET_SUIT(mask, 3);
 
@@ -129,7 +129,7 @@ int main(void) {
         while (!WindowShouldClose()) {
                 BeginDrawing();
 
-                ClearBackground(RAYWHITE);
+                ClearBackground((Color) {203, 166, 247, 255});
 
                 for (int i = 0; i < length; i++) {
                         float x = ((float) i + 1.0) * (image_width / (length + 1));
