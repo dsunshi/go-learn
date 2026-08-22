@@ -2,6 +2,7 @@
 #include "raylib.h"
 #include "cards.h"
 #include "assert.h"
+#include "time.h"
 #include <stdlib.h>
 
 #define RAYGUI_IMPLEMENTATION
@@ -26,6 +27,10 @@ void cleanup() {
         for (int i = 0; i < NUM_CARDS; i++) {
                 UnloadTexture(CARD_TEXTURES[i]);
         }
+}
+
+int except_suit(unsigned int suit, unsigned int card) {
+        return !(suit == GET_SUIT(card));
 }
 
 int and_match(unsigned int mask, unsigned int card) {
@@ -192,16 +197,26 @@ void draw_match_screen(int screen_width, int screen_height) {
         
         unsigned int mask = 0x00;
         int length = 0x00;
-        int suit = 3;
-        SET_SUIT(mask, 3);
-        srand(suit);
+        static int suit = -1;
+        static int seed = -1;
+        
+        if (seed < 0) {
+                seed = time(NULL);
+        }
+        srand(seed);
+
+        if (suit < 0) {
+                suit = rand() % 12;
+        }
+
+        SET_SUIT(mask, suit);
 
         int *suits = find_images(mask, and_match, &length);
         shuffle(suits, length);
         /* assert(length == 4); */
         
-        SET_SUIT(mask, SUIT_ANY);
-        int *all_suits = find_images(mask, and_match, &length);
+        /* SET_SUIT(mask, SUIT_ANY); */
+        int *all_suits = find_images(suit, except_suit, &length);
         shuffle(all_suits, length);
 
         /* Copy the match */
@@ -272,16 +287,20 @@ void draw_match_screen(int screen_width, int screen_height) {
 
         if (GuiButton((Rectangle){ screen_width - 175, footer_y - header_y * 2, 175, header_y * 3 }, "Check")) {
                 if (highlighted >= 0 ) {
-                        printf("highlighted %02X\n", highlighted);
-                        printf("highlighted %02X\n", GET_SUIT(all_suits[highlighted]));
-                        printf("initial     %02X\n", GET_SUIT(suits[0]));
                         if (GET_SUIT(all_suits[highlighted]) == GET_SUIT(suits[0])) {
-                                printf("Correct!\n");
                                 correct = true;
                         } else {
                                 correct = false;
-                                printf("Wrong!\n");
                         }
+                }
+        }
+        
+        if (correct) {
+                if (GuiButton((Rectangle){ screen_width - 175*2, footer_y - header_y * 2, 175, header_y * 3 }, "Next")) {
+                        suit = -1;
+                        correct = false;
+                        highlighted = -1;
+                        seed = -1;
                 }
         }
         
