@@ -43,6 +43,23 @@ void free_images(Texture2D *images, int length) {
         free(images);
 }
 
+void draw_card_from_texture(Texture2D image, float center_x, float center_y, float scale) {
+        float x = center_x - CARD_WIDTH  / 2.0f;
+        float y = center_y - CARD_HEIGHT / 2.0f;
+        float roundness    = CARD_HEIGHT / 1000.0f;
+        int segments       = 0;
+
+        float shadow_offset = roundness * 40.0f;
+
+        Rectangle r = { x + shadow_offset,
+                        y + shadow_offset,
+                        (float) CARD_WIDTH,
+                        (float) CARD_HEIGHT };
+
+        DrawTextureEx(image, (Vector2) {x, y}, 0.0f, scale, WHITE);
+        DrawRectangleRounded(r, roundness, segments, Fade(DARKGRAY, 0.2f));
+}
+
 Texture2D* find_images(unsigned int mask, match_fn match, int *length) {
         int size = 0;
 
@@ -107,7 +124,7 @@ int main(void) {
         Texture2D *textures = find_images(mask, and_match, &length);
         float scale         = ((float) MAX_CARDS / (float) length) * 0.5f;
         
-        printf("Found %d matches!\n", length);
+        /* printf("Found %d matches!\n", length); */
 
         while (!WindowShouldClose()) {
                 BeginDrawing();
@@ -115,10 +132,10 @@ int main(void) {
                 ClearBackground(RAYWHITE);
 
                 for (int i = 0; i < length; i++) {
-                        float x = ((float) i) * ((float) image_width / (float) length) + ((float) gap) * scale;
-                        float y = ((float) image_height / 2.0f) - CARD_HEIGHT * scale;
+                        float x = ((float) i + 1.0) * (image_width / (length + 1));
+                        float y = (float) image_height / 2.0f;
 
-                        DrawTextureEx(textures[i], (Vector2) {x, y}, 0.0f, scale, WHITE); 
+                        draw_card_from_texture(textures[i], x, y, scale);
                 }
 
                 EndDrawing();
