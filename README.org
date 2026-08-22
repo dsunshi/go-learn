@@ -9,6 +9,10 @@
  - September Tane  -> Double Junk
  - November Kasu_2 -> Double Junk
  - December Kasu   -> Double Junk
+JANUARY_KASU_1
+JANUARY_KASU_2
+JANUARY_HIKARI
+JANUARY_TANZAKU
 | Suit      | Bright | Animal | Ribbon | Junk | Junk | Double Junk |
 |-----------+--------+--------+--------+------+------+-------------|
 | January   |      1 |        |      1 |    1 |    1 |             |
