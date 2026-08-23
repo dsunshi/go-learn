@@ -235,7 +235,6 @@ void draw_match_screen(int screen_width, int screen_height) {
 
                         if (t < 3) {
                                 draw_card_from_texture(CARD_TEXTURES[GET_INDEX(suits[t])], x, y, scale);
-                                t++;
                         } else {
                                 if (correct) { 
                                         draw_card_from_texture(CARD_TEXTURES[GET_INDEX(suits[t])], x, y, scale);
@@ -243,6 +242,7 @@ void draw_match_screen(int screen_width, int screen_height) {
                                         draw_card_shadow(x, y);
                                 }
                         }
+                        t++;
                 }
         }
 
@@ -310,7 +310,7 @@ void draw_match_screen(int screen_width, int screen_height) {
 
 int main(void) {
         int gap          = CARD_WIDTH  / 2;
-        int image_height = CARD_HEIGHT * 4;
+        int image_height = CARD_HEIGHT * 5;
         int MAX_CARDS    = 4;
         int image_width  = (image_height * 16.0f) / 9.0f;
 
