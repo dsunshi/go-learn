@@ -180,8 +180,6 @@ void draw_match_screen(int screen_width, int screen_height) {
         int footer_y = screen_height * 0.95f;
         int table_height = screen_height * 0.9f;
         float scale = 0.5f;
-        static int highlighted = -1;
-        static bool correct = false;
 
         float card_height = CARD_HEIGHT * scale;
         float card_width  = CARD_WIDTH * scale;
@@ -197,8 +195,11 @@ void draw_match_screen(int screen_width, int screen_height) {
         
         unsigned int mask = 0x00;
         int length = 0x00;
+
         static int suit = -1;
         static int seed = -1;
+        static int highlighted = -1;
+        static bool correct = false;
         
         if (seed < 0) {
                 seed = time(NULL);
@@ -206,7 +207,7 @@ void draw_match_screen(int screen_width, int screen_height) {
         srand(seed);
 
         if (suit < 0) {
-                suit = rand() % 12;
+                suit = ((unsigned int) rand()) % 12 + 1;
         }
 
         SET_SUIT(mask, suit);
@@ -215,7 +216,6 @@ void draw_match_screen(int screen_width, int screen_height) {
         shuffle(suits, length);
         /* assert(length == 4); */
         
-        /* SET_SUIT(mask, SUIT_ANY); */
         int *all_suits = find_images(suit, except_suit, &length);
         shuffle(all_suits, length);
 
