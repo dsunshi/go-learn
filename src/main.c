@@ -72,43 +72,49 @@ typedef struct CardStyle {
         float scale;
 } CardStyle;
 
-/* float r     = (SHADOW_WIDTH - CARD_WIDTH) / 3.0f; */
-/* float theta = 120.0f; */
-void draw_card_from_texture(Texture2D image, CardStyle style, float center_x, float center_y) {
+void draw_card(unsigned int card, CardStyle style, float center_x, float center_y) {
+        
+        Texture2D image = CARD_TEXTURES[GET_INDEX(card)];
         float card_x = center_x - CARD_WIDTH  / 2.0f;
         float card_y = center_y - CARD_HEIGHT / 2.0f;
 
         if (style.draw_shadow) {
                 float shadow_x  = center_x - SHADOW_WIDTH  / 2.0f;
                 float shadow_y  = center_y - SHADOW_HEIGHT / 2.0f;
-                float xo = style.r * cos(style.theta);
-                float yo = style.r * sin(style.theta);
+                float xo = style.r * (float) cos(style.theta);
+                float yo = style.r * (float) sin(style.theta);
 
-                DrawTextureEx(SHADOW, (Vector2) {shadow_x + xo, shadow_y + yo}, 0.0f, style.scale, Fade(WHITE, style.shadow_opacity));
+                DrawTextureEx(SHADOW,
+                              (Vector2) {shadow_x + xo, shadow_y + yo},
+                              0.0f,
+                              style.scale,
+                              Fade(WHITE, style.shadow_opacity));
         }
+        
 
         if (style.draw_highlight) {
-                float roundness = 0.1;
-                float h_scale   = 1.1;
-                float highlight_x = center_x - CARD_WIDTH  * h_scale / 2.0f;
-                float highlight_y = center_y - CARD_HEIGHT * h_scale / 2.0f;
+                float roundness  = 0.1f;
+                float hx_scale   = 1.1f;
+                float hy_scale   = 1.07f;
+                float highlight_x = center_x - CARD_WIDTH  * hx_scale / 2.0f;
+                float highlight_y = center_y - CARD_HEIGHT * hy_scale / 2.0f;
                 int segments  = 0;
 
                 Rectangle h = { highlight_x,
                                 highlight_y,
-                                (float) CARD_WIDTH * h_scale,
-                                (float) CARD_HEIGHT * h_scale };
+                                (float) CARD_WIDTH * hx_scale,
+                                (float) CARD_HEIGHT * hy_scale };
 
                 DrawRectangleRounded(h, roundness, segments, style.highlight_color);
         }
-
+        
         if (style.draw_card) {
                 // Color *must* be WHTIE in order for the png transparency to work!
                 DrawTextureEx(image, (Vector2) {card_x, card_y}, 0.0f, style.scale, WHITE);
         }
 }
 
-int* find_images(unsigned int mask, match_fn match, int *length) {
+unsigned int* find_images(unsigned int mask, match_fn match, int *length) {
         int size = 0;
 
         if (mask == 0) {
@@ -123,7 +129,7 @@ int* find_images(unsigned int mask, match_fn match, int *length) {
                 }
         }
 
-        int *textures = (int *) malloc((unsigned long) size * sizeof(int));
+        unsigned int *textures = (unsigned int *) malloc((unsigned long) size * sizeof(unsigned int));
 
         if (textures == NULL) {
                 printf("[ERROR] Failed to allocate!");
@@ -158,20 +164,20 @@ int* find_images(unsigned int mask, match_fn match, int *length) {
    if this may not be the case, use a better random
    number generator. */
 void shuffle(int *array, size_t n) {
-    if (n > 1) {
-        size_t i;
-        for (i = 0; i < n - 1; i++) {
-          size_t j = i + rand() / (RAND_MAX / (n - i) + 1);
-          int t = array[j];
-          array[j] = array[i];
-          array[i] = t;
+        if (n > 1) {
+                size_t i;
+                for (i = 0; i < n - 1; i++) {
+                        int j = (int) (i + ((size_t) rand()) / (RAND_MAX / (n - i) + 1));
+                        int t = array[j];
+                        array[j] = array[i];
+                        array[i] = t;
+                }
         }
-    }
 }
 
 int main(void) {
         int image_height = CARD_HEIGHT * 2;
-        int image_width  = (image_height * 16.0f) / 9.0f;
+        int image_width  = (int) ((((float) image_height) * 16.0f) / 9.0f);
 
         InitWindow(image_width, image_height, "Card drawing example");
         init();
@@ -180,22 +186,19 @@ int main(void) {
                 BeginDrawing();
 
                 ClearBackground((Color) {216, 222, 233, 255});
-                /* ClearBackground(RAYWHITE); */
 
                 CardStyle style = (CardStyle) {
                         .draw_highlight = true,
                         .draw_shadow = true,
                         .draw_card = true,
                         .highlight_color = (Color) {163, 190, 140, 255},
-                        .shadow_opacity = 0.75,
+                        .shadow_opacity = 1.0,
                         .r = (SHADOW_WIDTH - CARD_WIDTH) / 3.0f,
                         .theta = 120.0f,
-                        .scale = 1.0,
+                        .scale = 1.0f,
                 };
 
-                /* draw_match_screen(image_width, image_height); */
-                draw_card_from_texture(CARD_TEXTURES[GET_INDEX(HWATU_APRIL_TANE)], style, image_width/2, image_height/2);
-                /* draw_card_from_texture(CARD_TEXTURES[GET_INDEX(HWATU_MAY_TANE)], image_width/2 - CARD_WIDTH/2, image_height/2, 1.0); */
+                draw_card(HWATU_APRIL_TANE, style, ((float) image_width)/2.0f, ((float) image_height)/2.0f);
 
                 EndDrawing();
         }
