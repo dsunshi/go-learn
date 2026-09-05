@@ -1,14 +1,17 @@
 
 #include "raylib.h"
+
 #include "cards.h"
 #include "assert.h"
 #include "time.h"
-#include <stdlib.h>
 
-#define RAYGUI_IMPLEMENTATION
-#include "raygui.h"
+#include <stdlib.h>
+#include <math.h>
+
+/* #define RAYGUI_IMPLEMENTATION */
+/* #include "raygui.h" */
 /* #include "raymath.h" */
-/* #include "stdio.h" */
+#include "stdio.h"
 /* #include "stdlib.h" */
 
 #define SUIT_ANY    (0x0F)
@@ -58,79 +61,51 @@ int or_match(unsigned int mask, unsigned int card) {
         }
 }
 
-void draw_card_shadow(float center_x, float center_y) {
-        float x = center_x - CARD_WIDTH  / 2.0f;
-        float y = center_y - CARD_HEIGHT / 2.0f;
-        float roundness    = CARD_HEIGHT / 1000.0f;
-        int segments       = 0;
+typedef struct CardStyle {
+        bool  draw_highlight;
+        bool  draw_shadow;
+        bool  draw_card;
+        Color highlight_color;
+        float shadow_opacity;
+        float r;
+        float theta;
+        float scale;
+} CardStyle;
 
-        float shadow_offset = roundness * 30.0f;
+/* float r     = (SHADOW_WIDTH - CARD_WIDTH) / 3.0f; */
+/* float theta = 120.0f; */
+void draw_card_from_texture(Texture2D image, CardStyle style, float center_x, float center_y) {
+        float card_x = center_x - CARD_WIDTH  / 2.0f;
+        float card_y = center_y - CARD_HEIGHT / 2.0f;
 
-        Rectangle r = { x + shadow_offset,
-                        y + shadow_offset,
-                        (float) (CARD_WIDTH  * 1.0f),
-                        (float) (CARD_HEIGHT * 1.0f) };
+        if (style.draw_shadow) {
+                float shadow_x  = center_x - SHADOW_WIDTH  / 2.0f;
+                float shadow_y  = center_y - SHADOW_HEIGHT / 2.0f;
+                float xo = style.r * cos(style.theta);
+                float yo = style.r * sin(style.theta);
 
-        DrawRectangleRounded(r, roundness, segments, Fade((Color) { 59, 66, 82, 255}, 0.5f));
-}
+                DrawTextureEx(SHADOW, (Vector2) {shadow_x + xo, shadow_y + yo}, 0.0f, style.scale, Fade(WHITE, style.shadow_opacity));
+        }
 
-void draw_card_from_texture(Texture2D image, float center_x, float center_y, float scale) {
-        float card_x    = center_x - CARD_WIDTH  / 2.0f;
-        float card_y    = center_y - CARD_HEIGHT / 2.0f;
-        float shadow_x  = center_x - SHADOW_WIDTH  / 2.0f;
-        float shadow_y  = center_y - SHADOW_HEIGHT / 2.0f;
-        float roundness = CARD_HEIGHT / 1000.0f;
-        int segments    = 0;
+        if (style.draw_highlight) {
+                float roundness = 0.1;
+                float h_scale   = 1.1;
+                float highlight_x = center_x - CARD_WIDTH  * h_scale / 2.0f;
+                float highlight_y = center_y - CARD_HEIGHT * h_scale / 2.0f;
+                int segments  = 0;
 
-        float r     = (SHADOW_WIDTH - CARD_WIDTH) / 3.0f;
-        float theta = 120.0f;
+                Rectangle h = { highlight_x,
+                                highlight_y,
+                                (float) CARD_WIDTH * h_scale,
+                                (float) CARD_HEIGHT * h_scale };
 
-        /* printf("r: %0.2f\n", r); */
+                DrawRectangleRounded(h, roundness, segments, style.highlight_color);
+        }
 
-        float xo = r * cos(theta);
-        float yo = r * sin(theta);
-        
-        /* printf("xo: %0.2f\n", xo); */
-        /* printf("yo: %0.2f\n", yo); */
-
-        /* Rectangle card_r = { card_x, */
-        /*                      card_y, */
-        /*                      (float) CARD_WIDTH, */
-        /*                      (float) CARD_HEIGHT }; */
-        
-        /* Rectangle shadow_r = { shadow_x + xo, */
-        /*                        shadow_y + yo, */
-        /*                        (float) SHADOW_WIDTH, */
-        /*                        (float) SHADOW_HEIGHT }; */
-
-        DrawTextureEx(SHADOW, (Vector2) {shadow_x + xo, shadow_y + yo}, 0.0f, scale, Fade(WHITE, 0.5f));
-        DrawTextureEx(image, (Vector2) {card_x, card_y}, 0.0f, scale, WHITE);
-}
-
-void draw_highlighted_card_from_texture(Texture2D image, float center_x, float center_y, float scale) {
-        float x = center_x - CARD_WIDTH  / 2.0f;
-        float y = center_y - CARD_HEIGHT / 2.0f;
-        float roundness    = CARD_HEIGHT / 1000.0f;
-        int segments       = 0;
-
-        /* float shadow_offset = roundness * 30.0f; */
-
-        /* Rectangle r = { x + shadow_offset, */
-        /*                 y + shadow_offset, */
-        /*                 (float) (CARD_WIDTH  * 1.0f), */
-        /*                 (float) (CARD_HEIGHT * 1.0f) }; */
-        
-        float h_scale = 0.1f;
-        float delta_x = (CARD_WIDTH  * (1.0f + h_scale)) - CARD_WIDTH;
-        float delta_y = (CARD_HEIGHT * (1.0f + h_scale)) - CARD_HEIGHT;
-        Rectangle h = { x - delta_x / 2.0f,
-                        y - delta_y / 2.0f,
-                        (float) (CARD_WIDTH  * (1.0f + h_scale)),
-                        (float) (CARD_HEIGHT * (1.0f + h_scale)) };
-
-        /* DrawRectangleRounded(r, roundness, segments, Fade((Color) {59, 66, 82, 255}, 0.5f)); */
-        DrawRectangleRounded(h, roundness, segments, Fade((Color) {180, 142, 173, 255}, 1.0f));
-        DrawTextureEx(image, (Vector2) {x, y}, 0.0f, scale, WHITE);
+        if (style.draw_card) {
+                // Color *must* be WHTIE in order for the png transparency to work!
+                DrawTextureEx(image, (Vector2) {card_x, card_y}, 0.0f, style.scale, WHITE);
+        }
 }
 
 int* find_images(unsigned int mask, match_fn match, int *length) {
@@ -194,186 +169,38 @@ void shuffle(int *array, size_t n) {
     }
 }
 
-void draw_match_screen(int screen_width, int screen_height) {
-        int header_y = screen_height * 0.05f;
-        int footer_y = screen_height * 0.95f;
-        int table_height = screen_height * 0.9f;
-        float scale = 0.5f;
-
-        float card_height = CARD_HEIGHT * scale;
-        float card_width  = CARD_WIDTH * scale;
-
-        /* Left side */
-        int num_rows = 2;
-        int num_cols = 2;
-        int gy = (table_height - ( num_rows * card_height )) / (num_rows + 1);
-        int wy = card_height;
-        
-        int gx = ((screen_width / 2) - ( num_cols * card_height )) / (num_cols + 1);
-        int wx = card_width;
-        
-        unsigned int mask = 0x00;
-        int length = 0x00;
-
-        static int suit = -1;
-        static int seed = -1;
-        static int highlighted = -1;
-        static bool correct = false;
-        
-        if (seed < 0) {
-                seed = time(NULL);
-        }
-        srand(seed);
-
-        if (suit < 0) {
-                suit = ((unsigned int) rand()) % 12 + 1;
-        }
-
-        SET_SUIT(mask, suit);
-
-        int *suits = find_images(mask, and_match, &length);
-        shuffle(suits, length);
-        /* assert(length == 4); */
-        
-        int *all_suits = find_images(suit, except_suit, &length);
-        shuffle(all_suits, length);
-
-        /* Copy the match */
-        int x = rand() % 6;
-        all_suits[x] = suits[3];
-
-        ClearBackground((Color) {94, 129, 172, 255});
-
-        DrawText("Suit Match", 20, 20, 40, BLACK);
-
-        int t = 0;
-        for (int i = 1; i <= num_cols; i++) {
-                for (int j = 1; j <= num_rows; j++) {
-                        float x = i * (gx + wx) - card_width / 2.0f;
-                        float y = j * (gy + wy) + header_y - card_height / 2.0f;
-
-                        if (t < 3) {
-                                draw_card_from_texture(CARD_TEXTURES[GET_INDEX(suits[t])], x, y, scale);
-                        } else {
-                                if (correct) { 
-                                        draw_card_from_texture(CARD_TEXTURES[GET_INDEX(suits[t])], x, y, scale);
-                                } else { 
-                                        draw_card_shadow(x, y);
-                                }
-                        }
-                        t++;
-                }
-        }
-
-        num_cols = 3;
-        gx = ((screen_width / 2) - ( num_cols * card_height )) / (num_cols + 1);
-
-        // Check if the left mouse button was pressed this frame
-        if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT)) {
-                // Fetch the x and y coordinates as a Vector2 struct
-                t = 0;
-                Vector2 click = GetMousePosition(); 
-                for (int i = 1; i <= num_cols; i++) {
-                        for (int j = 1; j <= num_rows; j++) {
-                                float x = i * (gx + wx) - card_width / 2.0f + screen_width / 2.0f;
-                                float y = j * (gy + wy) + header_y - card_height / 2.0f;
-
-                                if (click.x > x - card_width / 2.0f && click.x < x + card_width / 2.0f) {
-                                        if (click.y > y - card_height / 2.0f && click.y < y + card_height / 2.0f) {
-                                                highlighted = t;
-                                        }
-                                }
-                                t++;
-                        }
-                }
-        }
-
-        t = 0;
-        for (int i = 1; i <= num_cols; i++) {
-                for (int j = 1; j <= num_rows; j++) {
-                        float x = i * (gx + wx) - card_width / 2.0f + screen_width / 2.0f;
-                        float y = j * (gy + wy) + header_y - card_height / 2.0f;
-
-                        if (t == highlighted) {
-                                draw_highlighted_card_from_texture(CARD_TEXTURES[GET_INDEX(all_suits[t])], x, y, scale);
-                        } else {
-                                draw_card_from_texture(CARD_TEXTURES[GET_INDEX(all_suits[t])], x, y, scale);
-                        }
-
-                        t++;
-                }
-        }
-
-        if (GuiButton((Rectangle){ screen_width - 175, footer_y - header_y * 2, 175, header_y * 3 }, "Check")) {
-                if (highlighted >= 0 ) {
-                        if (GET_SUIT(all_suits[highlighted]) == GET_SUIT(suits[0])) {
-                                correct = true;
-                        } else {
-                                correct = false;
-                        }
-                }
-        }
-        
-        if (correct) {
-                if (GuiButton((Rectangle){ screen_width - 175*2, footer_y - header_y * 2, 175, header_y * 3 }, "Next")) {
-                        suit = -1;
-                        correct = false;
-                        highlighted = -1;
-                        seed = -1;
-                }
-        }
-        
-        free(suits);
-        free(all_suits);
-}
-
 int main(void) {
-        int gap          = CARD_WIDTH  / 2;
         int image_height = CARD_HEIGHT * 2;
-        int MAX_CARDS    = 4;
         int image_width  = (image_height * 16.0f) / 9.0f;
 
         InitWindow(image_width, image_height, "Card drawing example");
-
         init();
-        /* unsigned int mask = 0x00; */
-        /* int length = 0x00; */
-        /* SET_ANIMAL(mask); */
-        /* SET_BRIGHT(mask); */
-        /* SET_DOUBLE_JUNK(mask); */
-        /* SET_JOKER(mask); */
-        /* SET_JUNK(mask); */
-        /* SET_RIBBON(mask); */
-        /* SET_SUIT(mask, 3); */
-
-        /* Texture2D *textures = find_images(mask, and_match, &length); */
-        /* float scale         = fmin(0.5f, ((float) MAX_CARDS / (float) length) * 0.5f); */
-        
-        /* printf("Found %d matches!\n", length); */
 
         while (!WindowShouldClose()) {
                 BeginDrawing();
 
-                /* ClearBackground((Color) {203, 166, 247, 255}); */
-                ClearBackground(RAYWHITE);
+                ClearBackground((Color) {216, 222, 233, 255});
+                /* ClearBackground(RAYWHITE); */
+
+                CardStyle style = (CardStyle) {
+                        .draw_highlight = true,
+                        .draw_shadow = true,
+                        .draw_card = true,
+                        .highlight_color = (Color) {163, 190, 140, 255},
+                        .shadow_opacity = 0.75,
+                        .r = (SHADOW_WIDTH - CARD_WIDTH) / 3.0f,
+                        .theta = 120.0f,
+                        .scale = 1.0,
+                };
 
                 /* draw_match_screen(image_width, image_height); */
-                draw_card_from_texture(CARD_TEXTURES[GET_INDEX(HWATU_APRIL_TANE)], image_width/2, image_height/2, 1.0);
-                draw_card_from_texture(CARD_TEXTURES[GET_INDEX(HWATU_MAY_TANE)], image_width/2 - CARD_WIDTH/2, image_height/2, 1.0);
-
-                /* for (int i = 0; i < length; i++) { */
-                /*         float x = ((float) i + 1.0) * (image_width / (length + 1)); */
-                /*         float y = (float) image_height / 2.0f; */
-
-                /*         draw_card_from_texture(textures[i], x, y, scale); */
-                /* } */
+                draw_card_from_texture(CARD_TEXTURES[GET_INDEX(HWATU_APRIL_TANE)], style, image_width/2, image_height/2);
+                /* draw_card_from_texture(CARD_TEXTURES[GET_INDEX(HWATU_MAY_TANE)], image_width/2 - CARD_WIDTH/2, image_height/2, 1.0); */
 
                 EndDrawing();
         }
 
-        /* free_images(textures, length); */
         cleanup();
-
         CloseWindow();
 
         return 0;

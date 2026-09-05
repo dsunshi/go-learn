@@ -27,11 +27,13 @@ LD_FLAGS = -lraylib -lGL -lm -lpthread -ldl -lrt -lX11
 
 TEMP_IMG := $(shell mktemp).png
 
+SHADOW_COLOR := "#2e3440"
+
 all: $(OUT_DIR)/main
 
 $(PNG_DIR)/shadow.png:
 	magick -size $(SHADOW_WIDTH)x$(SHADOW_HEIGHT) canvas:transparent PNG32:$(TEMP_IMG)
-	magick $(TEMP_IMG) -fill black -draw "rectangle $(SC0X),$(SC0Y) $(SC1X),$(SC1Y)" $(TEMP_IMG)
+	magick $(TEMP_IMG) -fill $(SHADOW_COLOR) -draw "rectangle $(SC0X),$(SC0Y) $(SC1X),$(SC1Y)" $(TEMP_IMG)
 	magick $(TEMP_IMG) -filter Gaussian -blur 0x8 $@
 
 $(H_DIR)/shadow.h: $(PNG_DIR)/shadow.png $(OUT_DIR)/toHeader
