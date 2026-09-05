@@ -75,12 +75,13 @@ typedef struct CardStyle {
 void draw_card(unsigned int card, CardStyle style, float center_x, float center_y) {
         
         Texture2D image = CARD_TEXTURES[GET_INDEX(card)];
-        float card_x = center_x - CARD_WIDTH  / 2.0f;
-        float card_y = center_y - CARD_HEIGHT / 2.0f;
+
+        float card_x = center_x - CARD_WIDTH  * style.scale / 2.0f;
+        float card_y = center_y - CARD_HEIGHT * style.scale / 2.0f;
 
         if (style.draw_shadow) {
-                float shadow_x  = center_x - SHADOW_WIDTH  / 2.0f;
-                float shadow_y  = center_y - SHADOW_HEIGHT / 2.0f;
+                float shadow_x  = center_x - SHADOW_WIDTH  * style.scale / 2.0f;
+                float shadow_y  = center_y - SHADOW_HEIGHT * style.scale / 2.0f;
                 float xo = style.r * (float) cos(style.theta);
                 float yo = style.r * (float) sin(style.theta);
 
@@ -94,8 +95,8 @@ void draw_card(unsigned int card, CardStyle style, float center_x, float center_
 
         if (style.draw_highlight) {
                 float roundness  = 0.1f;
-                float hx_scale   = 1.1f;
-                float hy_scale   = 1.07f;
+                float hx_scale   = style.scale * 1.1f;
+                float hy_scale   = style.scale * 1.07f;
                 float highlight_x = center_x - CARD_WIDTH  * hx_scale / 2.0f;
                 float highlight_y = center_y - CARD_HEIGHT * hy_scale / 2.0f;
                 int segments  = 0;
