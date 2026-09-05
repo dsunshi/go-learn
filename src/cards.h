@@ -2,11 +2,19 @@
 #define CARDS_H
 
 #ifndef CARD_WIDTH
-#define CARD_WIDTH  103
+#define CARD_WIDTH 200 
 #endif
 
 #ifndef CARD_HEIGHT
-#define CARD_HEIGHT 168
+#define CARD_HEIGHT 326
+#endif
+
+#ifndef SHADOW_WIDTH
+#define SHADOW_WIDTH  250
+#endif
+
+#ifndef SHADOW_HEIGHT
+#define SHADOW_HEIGHT 407
 #endif
 
 #define MONTHS             12
@@ -64,6 +72,7 @@
 #include "Hwatu_September_Kasu_2.h"
 #include "Hwatu_September_Tane.h"
 #include "Hwatu_September_Tanzaku.h"
+#include "shadow.h"
 
 #define GET_BIT(number, n) (((number) >> (n)) & 0x01)
 #define SET_BIT(number, n) ( (number) |= (0x01 << (n)))
@@ -529,6 +538,14 @@ const Image IMAGE_DECK[NUM_CARDS] = {
         .format  = HWATU_DECEMBER_TANZAKU_FORMAT,
         .mipmaps = 1
     }
+};
+
+const Image SHADOW_IMG = {
+        .data    = SHADOW_DATA,
+        .width   = SHADOW_WIDTH,
+        .height  = SHADOW_HEIGHT,
+        .format  = SHADOW_FORMAT,
+        .mipmaps = 1
 };
 
 #endif /* CARDS_H */

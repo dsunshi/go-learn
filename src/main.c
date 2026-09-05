@@ -16,17 +16,20 @@
 typedef int (* match_fn)(unsigned int, unsigned int);
 
 Texture2D CARD_TEXTURES[NUM_CARDS];
+Texture2D SHADOW;
 
 void init() {
         for (int i = 0; i < NUM_CARDS; i++) {
                 CARD_TEXTURES[i] = LoadTextureFromImage(IMAGE_DECK[GET_INDEX(CARDS[i])]);
         }
+        SHADOW = LoadTextureFromImage(SHADOW_IMG);
 }
 
 void cleanup() {
         for (int i = 0; i < NUM_CARDS; i++) {
                 UnloadTexture(CARD_TEXTURES[i]);
         }
+        UnloadTexture(SHADOW);
 }
 
 int except_suit(unsigned int suit, unsigned int card) {
@@ -72,20 +75,36 @@ void draw_card_shadow(float center_x, float center_y) {
 }
 
 void draw_card_from_texture(Texture2D image, float center_x, float center_y, float scale) {
-        float x = center_x - CARD_WIDTH  / 2.0f;
-        float y = center_y - CARD_HEIGHT / 2.0f;
-        float roundness    = CARD_HEIGHT / 1000.0f;
-        int segments       = 0;
+        float card_x    = center_x - CARD_WIDTH  / 2.0f;
+        float card_y    = center_y - CARD_HEIGHT / 2.0f;
+        float shadow_x  = center_x - SHADOW_WIDTH  / 2.0f;
+        float shadow_y  = center_y - SHADOW_HEIGHT / 2.0f;
+        float roundness = CARD_HEIGHT / 1000.0f;
+        int segments    = 0;
 
-        float shadow_offset = roundness * 30.0f;
+        float r     = (SHADOW_WIDTH - CARD_WIDTH) / 3.0f;
+        float theta = 120.0f;
 
-        Rectangle r = { x + shadow_offset,
-                        y + shadow_offset,
-                        (float) (CARD_WIDTH  * 1.0f),
-                        (float) (CARD_HEIGHT * 1.0f) };
+        /* printf("r: %0.2f\n", r); */
 
-        DrawRectangleRounded(r, roundness, segments, Fade((Color) { 59, 66, 82, 255}, 0.5f));
-        DrawTextureEx(image, (Vector2) {x, y}, 0.0f, scale, WHITE);
+        float xo = r * cos(theta);
+        float yo = r * sin(theta);
+        
+        /* printf("xo: %0.2f\n", xo); */
+        /* printf("yo: %0.2f\n", yo); */
+
+        /* Rectangle card_r = { card_x, */
+        /*                      card_y, */
+        /*                      (float) CARD_WIDTH, */
+        /*                      (float) CARD_HEIGHT }; */
+        
+        /* Rectangle shadow_r = { shadow_x + xo, */
+        /*                        shadow_y + yo, */
+        /*                        (float) SHADOW_WIDTH, */
+        /*                        (float) SHADOW_HEIGHT }; */
+
+        DrawTextureEx(SHADOW, (Vector2) {shadow_x + xo, shadow_y + yo}, 0.0f, scale, Fade(WHITE, 0.5f));
+        DrawTextureEx(image, (Vector2) {card_x, card_y}, 0.0f, scale, WHITE);
 }
 
 void draw_highlighted_card_from_texture(Texture2D image, float center_x, float center_y, float scale) {
@@ -310,7 +329,7 @@ void draw_match_screen(int screen_width, int screen_height) {
 
 int main(void) {
         int gap          = CARD_WIDTH  / 2;
-        int image_height = CARD_HEIGHT * 5;
+        int image_height = CARD_HEIGHT * 2;
         int MAX_CARDS    = 4;
         int image_width  = (image_height * 16.0f) / 9.0f;
 
@@ -338,7 +357,9 @@ int main(void) {
                 /* ClearBackground((Color) {203, 166, 247, 255}); */
                 ClearBackground(RAYWHITE);
 
-                draw_match_screen(image_width, image_height);
+                /* draw_match_screen(image_width, image_height); */
+                draw_card_from_texture(CARD_TEXTURES[GET_INDEX(HWATU_APRIL_TANE)], image_width/2, image_height/2, 1.0);
+                draw_card_from_texture(CARD_TEXTURES[GET_INDEX(HWATU_MAY_TANE)], image_width/2 - CARD_WIDTH/2, image_height/2, 1.0);
 
                 /* for (int i = 0; i < length; i++) { */
                 /*         float x = ((float) i + 1.0) * (image_width / (length + 1)); */
