@@ -39,8 +39,8 @@ $(PNG_DIR)/shadow.png:
 $(H_DIR)/shadow.h: $(PNG_DIR)/shadow.png $(OUT_DIR)/toHeader
 	./$(OUT_DIR)/toHeader $< $@
 
-$(OUT_DIR)/main: src/main.c src/cards.h src/raygui.h $(H_FILES) $(H_DIR)/shadow.h | $(OUT_DIR)
-	gcc -o $@ $< $(C_FLAGS) -DCARD_WIDTH=$(CARD_WIDTH) -DCARD_HEIGHT=$(CARD_HEIGHT) -I./$(H_DIR) $(LD_FLAGS)
+$(OUT_DIR)/main: src/main.c src/cards.c src/cards.h src/raygui.h $(H_FILES) $(H_DIR)/shadow.h | $(OUT_DIR)
+	gcc -o $@ $< src/cards.c $(C_FLAGS) -DCARD_WIDTH=$(CARD_WIDTH) -DCARD_HEIGHT=$(CARD_HEIGHT) -I./$(H_DIR) $(LD_FLAGS)
 
 $(H_DIR)/%.h: $(PNG_DIR)/%.png | $(H_DIR) out/toHeader $(PNG_FILES)
 	./$(OUT_DIR)/toHeader $< $@

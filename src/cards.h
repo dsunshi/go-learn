@@ -1,3 +1,4 @@
+
 #ifndef CARDS_H
 #define CARDS_H
 
@@ -23,6 +24,10 @@
 #define NUM_CARDS          (MONTHS * CARDS_PER_MONTH + JOKERS)
 
 #include "raylib.h"
+
+#include <stdlib.h>
+#include <math.h>
+#include <stdio.h>
 
 #include "Hwatu_April_Kasu_1.h"
 #include "Hwatu_April_Kasu_2.h"
@@ -150,7 +155,31 @@
 #define HWATU_DECEMBER_TANE        ((unsigned int) 0x232E)
 #define HWATU_DECEMBER_TANZAKU     ((unsigned int) 0x432F)
 
-const unsigned int CARDS[NUM_CARDS] = {
+#define SUIT_ANY    (0x0F)
+
+typedef int (* match_fn)(unsigned int, unsigned int);
+
+typedef struct CardStyle {
+        bool  draw_highlight;
+        bool  draw_shadow;
+        bool  draw_card;
+        Color highlight_color;
+        float shadow_opacity;
+        float r;
+        float theta;
+        float scale;
+} CardStyle;
+
+void init();
+void cleanup();
+int except_suit(unsigned int suit, unsigned int card);
+int and_match(unsigned int mask, unsigned int card);
+int or_match(unsigned int mask, unsigned int card);
+unsigned int* find_images(unsigned int mask, match_fn match, int *length);
+void shuffle(int *array, size_t n);
+void draw_card(unsigned int card, CardStyle style, float center_x, float center_y);
+
+static const unsigned int CARDS[NUM_CARDS] = {
         HWATU_JANUARY_HIKARI,
         HWATU_JANUARY_KASU_1,
         HWATU_JANUARY_KASU_2,
@@ -201,7 +230,7 @@ const unsigned int CARDS[NUM_CARDS] = {
         HWATU_DECEMBER_TANZAKU
 };
 
-const Image IMAGE_DECK[NUM_CARDS] = {
+static const Image IMAGE_DECK[NUM_CARDS] = {
     {
         .data    = HWATU_JANUARY_HIKARI_DATA,
         .width   = HWATU_JANUARY_HIKARI_WIDTH,
@@ -540,7 +569,7 @@ const Image IMAGE_DECK[NUM_CARDS] = {
     }
 };
 
-const Image SHADOW_IMG = {
+static const Image SHADOW_IMG = {
         .data    = SHADOW_DATA,
         .width   = SHADOW_WIDTH,
         .height  = SHADOW_HEIGHT,
