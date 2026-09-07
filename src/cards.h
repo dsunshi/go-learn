@@ -155,7 +155,7 @@
 #define HWATU_DECEMBER_TANE        ((unsigned int) 0x232E)
 #define HWATU_DECEMBER_TANZAKU     ((unsigned int) 0x432F)
 
-#define SUIT_ANY    (0x0F)
+#define SUIT_ANY                   (0x0F)
 
 typedef int (* match_fn)(unsigned int, unsigned int);
 

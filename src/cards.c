@@ -9,6 +9,7 @@ void init() {
         for (int i = 0; i < NUM_CARDS; i++) {
                 CARD_TEXTURES[i] = LoadTextureFromImage(IMAGE_DECK[GET_INDEX(CARDS[i])]);
         }
+
         SHADOW = LoadTextureFromImage(SHADOW_IMG);
 }
 
@@ -16,6 +17,7 @@ void cleanup() {
         for (int i = 0; i < NUM_CARDS; i++) {
                 UnloadTexture(CARD_TEXTURES[i]);
         }
+
         UnloadTexture(SHADOW);
 }
 
@@ -54,8 +56,8 @@ void draw_card(unsigned int card, CardStyle style, float center_x, float center_
         float card_y = center_y - CARD_HEIGHT * style.scale / 2.0f;
 
         if (style.draw_shadow) {
-                float shadow_x  = center_x - SHADOW_WIDTH  * style.scale / 2.0f;
-                float shadow_y  = center_y - SHADOW_HEIGHT * style.scale / 2.0f;
+                float shadow_x = center_x - SHADOW_WIDTH  * style.scale / 2.0f;
+                float shadow_y = center_y - SHADOW_HEIGHT * style.scale / 2.0f;
                 float xo = style.r * (float) cos(style.theta);
                 float yo = style.r * (float) sin(style.theta);
 
@@ -68,23 +70,23 @@ void draw_card(unsigned int card, CardStyle style, float center_x, float center_
         
 
         if (style.draw_highlight) {
-                float roundness  = 0.1f;
-                float hx_scale   = style.scale * 1.1f;
-                float hy_scale   = style.scale * 1.07f;
+                float roundness   = 0.1f;
+                float hx_scale    = style.scale * 1.1f;
+                float hy_scale    = style.scale * 1.07f;
                 float highlight_x = center_x - CARD_WIDTH  * hx_scale / 2.0f;
                 float highlight_y = center_y - CARD_HEIGHT * hy_scale / 2.0f;
-                int segments  = 0;
+                int segments      = 0;
 
                 Rectangle h = { highlight_x,
                                 highlight_y,
-                                (float) CARD_WIDTH * hx_scale,
+                                (float) CARD_WIDTH  * hx_scale,
                                 (float) CARD_HEIGHT * hy_scale };
 
                 DrawRectangleRounded(h, roundness, segments, style.highlight_color);
         }
         
         if (style.draw_card) {
-                // Color *must* be WHTIE in order for the png transparency to work!
+                // Color *must* be WHTIE in order for the png transparency to work
                 DrawTextureEx(image, (Vector2) {card_x, card_y}, 0.0f, style.scale, WHITE);
         }
 }
@@ -134,10 +136,6 @@ unsigned int* find_images(unsigned int mask, match_fn match, int *length) {
 // Source - https://stackoverflow.com/a/6127606
 // Posted by John Leehey, modified by community. See post 'Timeline' for change history
 // Retrieved 2026-08-22, License - CC BY-SA 3.0
-/* Arrange the N elements of ARRAY in random order.
-   Only effective if N is much smaller than RAND_MAX;
-   if this may not be the case, use a better random
-   number generator. */
 void shuffle(int *array, size_t n) {
         if (n > 1) {
                 size_t i;
