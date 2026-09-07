@@ -1,4 +1,32 @@
-
+https://davidreiley.com/Courses/Econ431/GodoriRules.pdf
+https://moonrabbithanafuda.weebly.com/blog/go-stop-godori
+https://www.korea.net/NewsFocus/HonoraryReporters/view?articleId=190228
+https://www.youtube.com/watch?v=FSMFOftR60E
+https://en.wikipedia.org/wiki/Go-Stop
+* Scoring
+| Type of Card | Number of Cards         | Point Value |
+|--------------+-------------------------+-------------|
+| Bright       | 3 (including rain)      |           2 |
+|              | 3 (excluding rain)      |           3 |
+|              | 4                       |           4 |
+|              | 5                       |          15 |
+|--------------+-------------------------+-------------|
+| Animal       | 5                       |           1 |
+|              | 1 (after 5)             |           1 |
+|              | 3                       |           5 |
+|--------------+-------------------------+-------------|
+| Ribbon       | 5                       |           1 |
+|              | 1 (after 5)             |           1 |
+|              | 3 (red with writing)    |           3 |
+|              | 3 (blue with writing)   |           3 |
+|              | 3 (red without writing) |           3 |
+|--------------+-------------------------+-------------|
+| Junk         | 10                      |           1 |
+|              | 1 (after 10)            |           1 |
+- 10 Junk = 1 point
+- 3 red ribbons with writing = 3 points
+- 3 bright (including rain) = 5 points
+- February, April, August Animals = 5 points
 * Hwatu
  Tane    -> Animal
  Hikari  -> Bright
