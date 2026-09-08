@@ -47,48 +47,44 @@ int or_match(unsigned int mask, unsigned int card) {
         }
 }
 
+#define HALF(x) (((float) (x)) / 2.0f)
 
-void draw_card(unsigned int card, CardStyle style, float center_x, float center_y) {
-        
-        Texture2D image = CARD_TEXTURES[GET_INDEX(card)];
+void draw_texture(const Texture2D image, const Vector2 size, const Vector2 pos, const float scale, const int deg) {
+        const Rectangle source = (Rectangle) {0.0f, 0.0f, size.x, size.y};
+        const float rad = ((float) deg) * 3.14159f / 180.0f;
 
-        float card_x = center_x - CARD_WIDTH  * style.scale / 2.0f;
-        float card_y = center_y - CARD_HEIGHT * style.scale / 2.0f;
+        const Vector2 orig_center = (Vector2) {pos.x - HALF(size.x * scale), pos.y - HALF(size.y  * scale)};
+        const Vector2 turn_center = (Vector2) {(orig_center.x - pos.x) * (float) cos(rad) - (orig_center.y - pos.y) * (float) sin(rad) + pos.x,
+                                               (orig_center.x - pos.x) * (float) sin(rad) + (orig_center.y - pos.y) * (float) cos(rad) + pos.y};
 
-        if (style.draw_shadow) {
-                float shadow_x = center_x - SHADOW_WIDTH  * style.scale / 2.0f;
-                float shadow_y = center_y - SHADOW_HEIGHT * style.scale / 2.0f;
-                float xo = style.r * (float) cos(style.theta);
-                float yo = style.r * (float) sin(style.theta);
+        const Vector2 delta  = (Vector2) {orig_center.x - turn_center.x, orig_center.y - turn_center.y};
 
-                DrawTextureEx(SHADOW,
-                              (Vector2) {shadow_x + xo, shadow_y + yo},
-                              0.0f,
-                              style.scale,
-                              Fade(WHITE, style.shadow_opacity));
+        const Rectangle dest = (Rectangle) {pos.x + HALF(CARD_WIDTH) + delta.x,
+                                                pos.y + HALF(CARD_HEIGHT) + delta.y,
+                                                size.x,
+                                                size.y};
+
+        /* if (deg == 0) { */
+        /*         DrawTextureEx(image, orig_center, 0.0f, scale, WHITE); */
+        /* } else { */
+        /*         DrawTexturePro(image, source, dest, size, (float) deg, WHITE); */
+        /* } */
+        DrawTexturePro(image, source, dest, size, (float) deg, WHITE);
+}
+
+void draw_card(const unsigned int card, const Vector2 pos, const float scale, const int deg, const bool shadow, const float r, const float theta) {
+        const Vector2 cast       = (Vector2) {r * (float) cos(theta), r * (float) sin(theta)};
+        const Vector2 shadow_pos = (Vector2) {pos.x + cast.x, pos.y + cast.y};
+        const Texture2D image    = CARD_TEXTURES[GET_INDEX(card)];
+
+        const Vector2 card_size   = (Vector2) {(float) CARD_WIDTH,   (float) CARD_HEIGHT};
+        const Vector2 shadow_size = (Vector2) {(float) SHADOW_WIDTH, (float) SHADOW_HEIGHT};
+
+        if (shadow) {
+                draw_texture(SHADOW, shadow_size, shadow_pos, scale, deg);
         }
-        
 
-        if (style.draw_highlight) {
-                float roundness   = 0.1f;
-                float hx_scale    = style.scale * 1.1f;
-                float hy_scale    = style.scale * 1.07f;
-                float highlight_x = center_x - CARD_WIDTH  * hx_scale / 2.0f;
-                float highlight_y = center_y - CARD_HEIGHT * hy_scale / 2.0f;
-                int segments      = 0;
-
-                Rectangle h = { highlight_x,
-                                highlight_y,
-                                (float) CARD_WIDTH  * hx_scale,
-                                (float) CARD_HEIGHT * hy_scale };
-
-                DrawRectangleRounded(h, roundness, segments, style.highlight_color);
-        }
-        
-        if (style.draw_card) {
-                // Color *must* be WHTIE in order for the png transparency to work
-                DrawTextureEx(image, (Vector2) {card_x, card_y}, 0.0f, style.scale, WHITE);
-        }
+        draw_texture(image, card_size, pos, scale, deg);
 }
 
 unsigned int* find_images(unsigned int mask, match_fn match, int *length) {

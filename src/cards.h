@@ -177,7 +177,7 @@ int and_match(unsigned int mask, unsigned int card);
 int or_match(unsigned int mask, unsigned int card);
 unsigned int* find_images(unsigned int mask, match_fn match, int *length);
 void shuffle(int *array, size_t n);
-void draw_card(unsigned int card, CardStyle style, float center_x, float center_y);
+void draw_card(const unsigned int card, const Vector2 pos, const float scale, const int deg, const bool shadow, const float r, const float theta);
 
 static const unsigned int CARDS[NUM_CARDS] = {
         HWATU_JANUARY_HIKARI,

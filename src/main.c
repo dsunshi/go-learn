@@ -12,77 +12,29 @@ int main(void) {
         InitWindow(image_width, image_height, "Card drawing example");
         init();
 
-        CardStyle style = (CardStyle) {
-                .draw_highlight = true,
-                .draw_shadow = true,
-                .draw_card = true,
-                .highlight_color = (Color) {163, 190, 140, 255},
-                .shadow_opacity = 1.0,
-                .r = (SHADOW_WIDTH - CARD_WIDTH) / 3.0f,
-                .theta = 120.0f,
-                .scale = 1.0f,
-        };
+        SetTargetFPS(60);
 
-        float h = (float) image_width/2.0f;
-        float k = (float) image_height/2.0f;
-
-        Rectangle src = {0.0f, 0.0f, (float) CARD_WIDTH, (float) CARD_HEIGHT};
-        Rectangle dst = {h, k,
-                         (float) CARD_WIDTH, (float) CARD_HEIGHT};
-        Vector2   org = {(float) CARD_WIDTH, (float) CARD_HEIGHT};
-
-        float rot = 15.0f;
-
-        float ox = h - CARD_WIDTH/2.0f;
-        float oy = k - CARD_HEIGHT/2.0f;
-
-        float xp = (ox - h) * cos(rot) - (oy - k) * sin(rot) + h;
-        float yp = (ox - h) * sin(rot) + (oy - k) * cos(rot) + k;
-        float dx = ox - xp;
-        float dy = oy - yp;
+        int rotation = 0;
+        int card = 0;
+        int timer = 0;
 
         while (!WindowShouldClose()) {
                 BeginDrawing();
 
                 ClearBackground((Color) {216, 222, 233, 255});
 
-                Texture2D image = CARD_TEXTURES[GET_INDEX(HWATU_APRIL_TANE)];
-                rot = 15 * 3.14 / 180.0f;
-                xp = (ox - h) * cos(rot) - (oy - k) * sin(rot) + h;
-                yp = (ox - h) * sin(rot) + (oy - k) * cos(rot) + k;
-                dx = ox - xp;
-                dy = oy - yp;
-                dst = (Rectangle) {h + CARD_WIDTH/2.0f + dx, k + CARD_HEIGHT/2.0f + dy, (float) CARD_WIDTH, (float) CARD_HEIGHT};
-                rot = 15;
-                DrawTexturePro(image, src, dst, org, rot, WHITE);
+                Vector2 center = (Vector2) {(float) image_width/2.0f, (float) image_height/2.0f};
 
-                DrawLine((int)ox, 0, (int)ox, image_height, RED);
-                DrawLine(0, (int)oy, image_width, (int)oy, RED);
-                
-                DrawLine((int)xp, 0, (int)xp, image_height, BLUE);
-                DrawLine(0, (int)yp, image_width, (int)yp, BLUE);
-                
-                /* rot = 5.0f; */
-                /* xp = (ox - h) * cos(rot) - (oy - k) * sin(rot) + h; */
-                /* yp = (ox - h) * sin(rot) + (oy - k) * cos(rot) + k; */
-                /* dx = ox - xp; */
-                /* dy = oy - yp; */
-                /* dst = (Rectangle) {h + dx, k + dy, (float) CARD_WIDTH, (float) CARD_HEIGHT}; */
-                /* image = CARD_TEXTURES[GET_INDEX(HWATU_MAY_TANE)]; */
-                /* DrawTexturePro(image, src, dst, org, rot, WHITE); */
-                
-                /* rot = -15.0f; */
-                /* xp = (ox - h) * cos(rot) - (oy - k) * sin(rot) + h; */
-                /* yp = (ox - h) * sin(rot) + (oy - k) * cos(rot) + k; */
-                /* dx = ox - xp; */
-                /* dy = oy - yp; */
-                /* dst = (Rectangle) {h + dx, k + dy, (float) CARD_WIDTH, (float) CARD_HEIGHT}; */
-                /* image = CARD_TEXTURES[GET_INDEX(HWATU_JUNE_TANE)]; */
-                /* DrawTexturePro(image, src, dst, org, rot, WHITE); */
+                draw_card(CARDS[card], center, 1.0f, rotation, true, (SHADOW_WIDTH - CARD_WIDTH) / 3.0f, -11.0f * 3.14f / 6.0f);
 
-                DrawLine((int)image_width/2, 0, (int)image_width/2, image_height, GRAY);
-                DrawLine(0, (int)image_height/2, image_width, (int)image_height/2, GRAY);
-                /* draw_card(HWATU_APRIL_TANE, style, ); */
+                rotation = (rotation + 1) % 360;
+                timer++;
+
+                if(timer > 3 * 60) {
+                        timer = 0;
+                        card = (card + 1) % NUM_CARDS;
+                }
+
                 EndDrawing();
         }
 
